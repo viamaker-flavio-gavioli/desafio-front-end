@@ -28,7 +28,6 @@ const App = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Botão clicado - handleSubmit chamado');
     try {
       // Verifica se o campo de preço não está vazio
       if (!novoProduto.preco.trim()) {
@@ -49,6 +48,19 @@ const App = () => {
     } catch (error) {
       console.error('Erro ao adicionar produto:', error);
       message.error(error.message || 'Erro ao adicionar produto. Por favor, tente novamente.');
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await fetch(`http://localhost:3210/produtos/${id}`, {
+        method: 'DELETE',
+      });
+      message.success('Produto excluído com sucesso!');
+      fetchProdutos(); // Atualiza a lista de produtos após excluir o produto
+    } catch (error) {
+      console.error('Erro ao excluir produto:', error);
+      message.error('Erro ao excluir produto. Por favor, tente novamente.');
     }
   };
 
@@ -96,14 +108,15 @@ const App = () => {
                 onChange={handleInputChange}
               />
             </div>
-            <Button type="primary" htmlType="submit" style={{ width: '250px' }}>Salvar Produto</Button>
+            <Button type="primary" htmlType="submit" style={{ width: '250px',background: 'blue', color:'white' }}>Salvar Produto</Button>
           </form>
 
           <Space direction="horizontal" size="middle" style={{ display: 'flex', flexWrap: 'wrap' }}>
             {produtos.map((produto, index) => (
               <Card key={index} size="small" style={{ margin: '10px', flex: '1', minWidth: '200px' }}>
                 <img src={produto.imagem} style={{ border: '1px solid #ccc', width: '100%', height: '200px' }} alt={produto.nome} />
-                <p style={{ textAlign: 'center' }}>{produto.nome}</p>
+                <p style={{ textAlign: 'center' }}>{produto.nome} R${produto.preco}</p>
+                <Button style={{ width: '100%', marginTop: '10px', background: 'blue', color:'white' }} type="danger" onClick={() => handleDelete(produto.id)}>Excluir</Button>
               </Card>
             ))}
           </Space>
